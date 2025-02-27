@@ -9,8 +9,23 @@ import (
 
 func Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("public/index.html"))
-		err := tmpl.Execute(w, nil)
+		var rooms []RoomResponse
+
+		for _, room := range game.Games {
+			room := RoomResponse{
+				Name: room.Name,
+				Slug: room.Slug,
+			}
+			rooms = append(rooms, room)
+		}
+
+		response := RoomsIndexResponse{
+			Title: "Pick a room",
+			Rooms: rooms,
+		}
+
+		tmpl := template.Must(template.ParseFiles("public/index.html", "public/rooms_index.html"))
+		err := tmpl.Execute(w, response)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -25,13 +40,13 @@ func Room() http.HandlerFunc {
 			return
 		}
 
-		response := RoomResponse{
+		response := RoomsShowResponse{
 			Name:  g.Name,
 			Slug:  g.Slug,
 			Score: g.Score,
 		}
 
-		tmpl := template.Must(template.ParseFiles("public/index.html", "public/room.html"))
+		tmpl := template.Must(template.ParseFiles("public/index.html", "public/rooms_show.html"))
 		err := tmpl.Execute(w, response)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -68,6 +83,16 @@ func Guess() http.HandlerFunc {
 }
 
 type RoomResponse struct {
+	Name string
+	Slug string
+}
+
+type RoomsIndexResponse struct {
+	Title string
+	Rooms []RoomResponse
+}
+
+type RoomsShowResponse struct {
 	Name  string
 	Slug  string
 	Score int

@@ -1,0 +1,9 @@
+{{ define "content" }}
+<h2>{{ .Title }}</h2>
+
+{{ range .Rooms }}
+<div>
+    <h3>{{ .Name }}</h3>
+    <a href="/game/{{ .Slug }}">Play</a>
+</div>
+{{ end }} {{ end }}
