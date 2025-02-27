@@ -1,13 +1,13 @@
 {{ define "content" }}
 
-<div id="room">
+<div id="room" hx-ext="sse">
     <header>
         <nav><a href="/">Back</a></nav>
         <h1>{{ .Name }}</h1>
         <section id="scoreboard">0 points</section>
     </header>
 
-    <main></main>
+    <main sse-connect="/sse?stream={{ .Slug }}" sse-swap="nextSong" hx-swap="beforeend"></main>
 
     <footer>
         <form action="/room/{{ .Slug }}/guess" method="post" hx-target="#scoreboard">

@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/r3labs/sse/v2"
 )
 
 var Games = make(map[string]*Game)
@@ -27,13 +29,15 @@ type Game struct {
 	Songs       []Song
 	CurrentSong Song
 	Score       int
+	SSEServer   *sse.Server
 }
 
-func NewGame(name string, slug string, songs []Song) *Game {
+func NewGame(name string, slug string, songs []Song, sses *sse.Server) *Game {
 	return &Game{
-		Name:  name,
-		Slug:  slug,
-		Songs: songs,
+		Name:      name,
+		Slug:      slug,
+		Songs:     songs,
+		SSEServer: sses,
 	}
 }
 
@@ -42,15 +46,25 @@ func (g *Game) StartGame() {
 
 	randomSong := g.Songs[rand.Intn(len(g.Songs))]
 	g.CurrentSong = randomSong
-	fmt.Printf("Playing %s by %s\n", randomSong.Title, randomSong.Artist)
+	message := fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
+	g.Emit("nextSong", message)
 
 	go func() {
 		for range ticker.C {
 			randomSong := g.Songs[rand.Intn(len(g.Songs))]
 			g.CurrentSong = randomSong
-			fmt.Printf("Playing %s by %s\n", randomSong.Title, randomSong.Artist)
+
+			message := fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
+			g.Emit("nextSong", message)
 		}
 	}()
+}
+
+func (g *Game) Emit(eventType string, message string) {
+	g.SSEServer.Publish(g.Slug, &sse.Event{
+		Event: []byte(eventType),
+		Data:  []byte(message),
+	})
 }
 
 func (g *Game) Guess(guess string) {
