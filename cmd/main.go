@@ -11,8 +11,8 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", handlers.Index())
-	mux.HandleFunc("GET /game/{roomID}", handlers.Room())
-	mux.HandleFunc("POST /game/{roomID}/guess", handlers.Guess())
+	mux.HandleFunc("GET /room/{roomID}", handlers.Room())
+	mux.HandleFunc("POST /room/{roomID}/guess", handlers.Guess())
 
 	startClassicRockRoom()
 	startClassicPopRoom()

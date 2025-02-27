@@ -21,13 +21,35 @@
                 box-sizing: border-box;
             }
 
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+
+                &:has(#room) {
+                    overflow: hidden;
+                }
+            }
+
             body {
                 font-family: "Inter", sans-serif;
             }
 
-            input {
+            input,
+            button {
                 font: inherit;
-                font-size: 16px;
+                font-size: 24px;
+                padding: 0.75rem 1rem;
+                border: 0;
+            }
+
+            input {
+                background: #eee;
+            }
+
+            button {
+                background: salmon;
             }
 
             .room-card {
@@ -41,11 +63,34 @@
             h3 {
                 margin: 0 0 0.5rem;
             }
+
+            #room {
+                height: 100%;
+                display: grid;
+                grid-template-rows: min-content 1fr min-content;
+
+                header {
+                    background: #eee;
+                    padding: 1rem;
+
+                    h1 {
+                        margin: 1rem 0;
+                    }
+                }
+
+                main {
+                    padding: 1rem;
+                }
+
+                footer form {
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: 1fr min-content;
+                }
+            }
         </style>
     </head>
     <body hx-boost="true">
-        <h1>Music Quiz</h1>
-
         {{ block "content" . }}{{end}}
     </body>
 </html>
