@@ -3,7 +3,6 @@ package handlers
 import (
 	"html/template"
 	"net/http"
-	"strings"
 
 	"dev.kipkron.music-quiz/internal/game"
 )
@@ -12,6 +11,28 @@ func Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("public/index.html"))
 		err := tmpl.Execute(w, nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+}
+
+func Room() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		g, ok := game.Games[r.PathValue("roomID")]
+		if !ok {
+			http.Error(w, "Game not found", http.StatusNotFound)
+			return
+		}
+
+		response := RoomResponse{
+			Name:  g.Name,
+			Slug:  g.Slug,
+			Score: g.Score,
+		}
+
+		tmpl := template.Must(template.ParseFiles("public/index.html", "public/room.html"))
+		err := tmpl.Execute(w, response)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -32,11 +53,7 @@ func Guess() http.HandlerFunc {
 			return
 		}
 
-		guess = strings.ToLower(guess)
-
-		if guess == strings.ToLower(g.CurrentSong.Title) || guess == strings.ToLower(g.CurrentSong.Artist) {
-			g.Score++
-		}
+		g.Guess(guess)
 
 		response := GuessResponse{
 			Score: g.Score,
@@ -48,6 +65,12 @@ func Guess() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+}
+
+type RoomResponse struct {
+	Name  string
+	Slug  string
+	Score int
 }
 
 type GuessResponse struct {

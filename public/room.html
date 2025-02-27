@@ -1,0 +1,9 @@
+{{ define "content" }}
+<h2>{{ .Name }}</h2>
+
+<form action="/game/{{ .Slug }}/guess" method="post" hx-target="#scoreboard">
+    <input type="text" name="guess" />
+</form>
+
+<div id="scoreboard"></div>
+{{ end }}

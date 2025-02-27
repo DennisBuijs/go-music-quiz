@@ -10,7 +10,7 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", handlers.Index())
+	mux.HandleFunc("GET /game/{roomID}", handlers.Room())
 	mux.HandleFunc("POST /game/{roomID}/guess", handlers.Guess())
 
 	songs := []game.Song{
@@ -19,10 +19,10 @@ func main() {
 		game.NewSong("Bohemian Rhapsody", "Queen"),
 	}
 
-	g := game.NewGame(songs)
+	g := game.NewGame("Classic Rock", "classic-rock", songs)
 	g.StartGame()
 
-	game.Games["rock"] = g
+	game.Games[g.Slug] = g
 
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }

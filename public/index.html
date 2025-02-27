@@ -12,10 +12,6 @@
     <body hx-boost="true">
         <h1>Music Quiz</h1>
 
-        <form action="/game/rock/guess" method="post" hx-target="#scoreboard">
-            <input type="text" name="guess" />
-        </form>
-
-        <div id="scoreboard"></div>
+        {{ block "content" . }}{{end}}
     </body>
 </html>

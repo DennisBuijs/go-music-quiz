@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -21,13 +22,17 @@ func NewSong(title, artist string) Song {
 }
 
 type Game struct {
+	Name        string
+	Slug        string
 	Songs       []Song
 	CurrentSong Song
 	Score       int
 }
 
-func NewGame(songs []Song) *Game {
+func NewGame(name string, slug string, songs []Song) *Game {
 	return &Game{
+		Name:  name,
+		Slug:  slug,
 		Songs: songs,
 	}
 }
@@ -46,4 +51,12 @@ func (g *Game) StartGame() {
 			fmt.Printf("Playing %s by %s\n", randomSong.Title, randomSong.Artist)
 		}
 	}()
+}
+
+func (g *Game) Guess(guess string) {
+	guess = strings.ToLower(guess)
+
+	if guess == strings.ToLower(g.CurrentSong.Title) || guess == strings.ToLower(g.CurrentSong.Artist) {
+		g.Score++
+	}
 }
