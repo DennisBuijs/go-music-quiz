@@ -7,7 +7,7 @@
         <section id="scoreboard">0 points</section>
     </header>
 
-    <main sse-connect="/sse?stream={{ .Slug }}" sse-swap="nextSong" hx-swap="beforeend"></main>
+    <main sse-connect="/sse?stream={{ .Slug }}" sse-swap="chat" hx-swap="beforeend"></main>
 
     <footer>
         <form action="/room/{{ .Slug }}/guess" method="post" hx-target="#scoreboard">

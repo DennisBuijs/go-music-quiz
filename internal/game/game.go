@@ -42,20 +42,22 @@ func NewGame(name string, slug string, songs []Song, sses *sse.Server) *Game {
 }
 
 func (g *Game) StartGame() {
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(3 * time.Second)
 
 	randomSong := g.Songs[rand.Intn(len(g.Songs))]
 	g.CurrentSong = randomSong
-	message := fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
-	g.Emit("nextSong", message)
+	g.Emit("gameState", "message")
 
 	go func() {
 		for range ticker.C {
+			message := fmt.Sprintf("<div>Previous song was %s by %s</div>", randomSong.Title, randomSong.Artist)
+			g.Emit("chat", message)
+
 			randomSong := g.Songs[rand.Intn(len(g.Songs))]
 			g.CurrentSong = randomSong
 
-			message := fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
-			g.Emit("nextSong", message)
+			message = fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
+			g.Emit("audioUpdate", message)
 		}
 	}()
 }

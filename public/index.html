@@ -81,8 +81,15 @@
                 }
 
                 main {
-                    padding: 1rem;
                     overflow-y: auto;
+
+                    div {
+                        padding: 1rem;
+
+                        &:nth-child(odd) {
+                            background: #f9f9f9;
+                        }
+                    }
                 }
 
                 footer form {
@@ -95,5 +102,29 @@
     </head>
     <body hx-boost="true">
         {{ block "content" . }}{{end}}
+
+        <script>
+            chatContainerEl = document.querySelector("main");
+
+            letautoScrollEnabled = true;
+
+            chatContainerEl.addEventListener("scroll", () => {
+                autoScrollEnabled =
+                    Math.abs(chatContainerEl.scrollHeight - chatContainerEl.clientHeight - chatContainerEl.scrollTop) <
+                    1;
+            });
+
+            document.body.addEventListener("htmx:sseMessage", (e) => {
+                if (e.detail.type !== "chat") {
+                    return;
+                }
+
+                if (!autoScrollEnabled) {
+                    return;
+                }
+
+                chatContainerEl.scrollTo(0, chatContainerEl.scrollHeight);
+            });
+        </script>
     </body>
 </html>
