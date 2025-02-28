@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -50,12 +51,13 @@ func (g *Game) StartGame() {
 
 	go func() {
 		for range ticker.C {
-			message := fmt.Sprintf("<div>Previous song was %s by %s</div>", randomSong.Title, randomSong.Artist)
+			message := fmt.Sprintf("<div>Previous song was %s by %s</div>", g.CurrentSong.Title, g.CurrentSong.Artist)
 			g.Emit("chat", message)
 
 			randomSong := g.Songs[rand.Intn(len(g.Songs))]
 			g.CurrentSong = randomSong
 
+			log.Printf("[%s]Playing %s by %s", g.Slug, randomSong.Title, randomSong.Artist)
 			message = fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
 			g.Emit("audioUpdate", message)
 		}
