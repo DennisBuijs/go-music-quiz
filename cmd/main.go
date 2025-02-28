@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"dev.kipkron.music-quiz/internal/game"
 	"dev.kipkron.music-quiz/internal/handlers"
@@ -22,6 +23,7 @@ func main() {
 	mux.HandleFunc("GET /room/{roomID}", handlers.Room())
 	mux.HandleFunc("POST /room/{roomID}/guess", handlers.Guess())
 
+	mux.HandleFunc("GET /assets/", assetHandler())
 	mux.HandleFunc("GET /sse", sses.ServeHTTP)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", mux))
@@ -55,4 +57,12 @@ func startClassicPopRoom(sses *sse.Server) {
 	game.Games[g.Slug] = g
 
 	sses.CreateStream(g.Slug)
+}
+
+func assetHandler() http.HandlerFunc {
+	fs := http.FileServer(http.Dir("./public"))
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/assets")
+		fs.ServeHTTP(w, r)
+	}
 }
