@@ -1,13 +1,16 @@
 {{ define "content" }}
 
-<div id="room" hx-ext="sse">
+<div id="room" hx-ext="sse" sse-connect="/sse?stream={{ .Slug }}">
     <header>
         <nav><a href="/">Back</a></nav>
         <h1>{{ .Name }}</h1>
-        <section id="scoreboard">0 points</section>
+        <section style="display: flex; justify-content: space-between">
+            <div class="state" sse-swap="gameState">{{ .State.State }}</div>
+            <div id="scoreboard">0 points</div>
+        </section>
     </header>
 
-    <main sse-connect="/sse?stream={{ .Slug }}" sse-swap="chat" hx-swap="beforeend"></main>
+    <main sse-swap="chat" hx-swap="beforeend"></main>
 
     <footer>
         <form action="/room/{{ .Slug }}/guess" method="post" hx-target="#scoreboard">

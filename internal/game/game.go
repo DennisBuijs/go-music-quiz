@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -31,6 +29,7 @@ type Game struct {
 	CurrentSong Song
 	Score       int
 	SSEServer   *sse.Server
+	Schedule    GameSchedule
 }
 
 func NewGame(name string, slug string, songs []Song, sses *sse.Server) *Game {
@@ -43,25 +42,33 @@ func NewGame(name string, slug string, songs []Song, sses *sse.Server) *Game {
 }
 
 func (g *Game) StartGame() {
-	ticker := time.NewTicker(3 * time.Second)
+	g.GenerateGameSchedule(0)
+	g.Log()
 
-	randomSong := g.Songs[rand.Intn(len(g.Songs))]
-	g.CurrentSong = randomSong
-	g.Emit("gameState", "message")
+	for _, state := range g.Schedule.States {
+		state := state
 
-	go func() {
-		for range ticker.C {
-			message := fmt.Sprintf("<div>Previous song was %s by %s</div>", g.CurrentSong.Title, g.CurrentSong.Artist)
-			g.Emit("chat", message)
+		go func() {
+			time.Sleep(time.Until(state.EndAt))
+			g.Emit("gameState", state.State)
+		}()
+	}
+}
 
-			randomSong := g.Songs[rand.Intn(len(g.Songs))]
-			g.CurrentSong = randomSong
+func (g *Game) RandomSong() Song {
+	return g.Songs[rand.Intn(len(g.Songs))]
+}
 
-			log.Printf("[%s]Playing %s by %s", g.Slug, randomSong.Title, randomSong.Artist)
-			message = fmt.Sprintf("<div>Playing %s by %s</div>", randomSong.Title, randomSong.Artist)
-			g.Emit("audioUpdate", message)
-		}
-	}()
+func (g *Game) Guess(guess string) {
+	if g.CurrentState().State != stateSongPlaying.State {
+		return
+	}
+
+	guess = strings.ToLower(guess)
+
+	if guess == strings.ToLower(g.CurrentSong.Title) || guess == strings.ToLower(g.CurrentSong.Artist) {
+		g.Score++
+	}
 }
 
 func (g *Game) Emit(eventType string, message string) {
@@ -69,12 +76,4 @@ func (g *Game) Emit(eventType string, message string) {
 		Event: []byte(eventType),
 		Data:  []byte(message),
 	})
-}
-
-func (g *Game) Guess(guess string) {
-	guess = strings.ToLower(guess)
-
-	if guess == strings.ToLower(g.CurrentSong.Title) || guess == strings.ToLower(g.CurrentSong.Artist) {
-		g.Score++
-	}
 }

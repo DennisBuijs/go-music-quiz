@@ -43,6 +43,7 @@ func Room() http.HandlerFunc {
 		response := RoomsShowResponse{
 			Name:  g.Name,
 			Slug:  g.Slug,
+			State: g.CurrentState(),
 			Score: g.Score,
 		}
 
@@ -95,6 +96,7 @@ type RoomsIndexResponse struct {
 type RoomsShowResponse struct {
 	Name  string
 	Slug  string
+	State game.GameState
 	Score int
 }
 
