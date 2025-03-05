@@ -31,9 +31,9 @@ func main() {
 
 func startClassicRockRoom(sses *sse.Server) {
 	songs := []game.Song{
-		game.NewSong("Dancing in the Dark", "Bruce Springsteen"),
-		game.NewSong("Africa", "Toto"),
-		game.NewSong("Bohemian Rhapsody", "Queen"),
+		game.NewSong("Dancing in the Dark", "Bruce Springsteen", "someURL"),
+		game.NewSong("Africa", "Toto", "someURL"),
+		game.NewSong("Bohemian Rhapsody", "Queen", "someURL"),
 	}
 
 	g := game.NewGame("Classic Rock", "classic-rock", songs, sses)
@@ -46,9 +46,9 @@ func startClassicRockRoom(sses *sse.Server) {
 
 func startClassicPopRoom(sses *sse.Server) {
 	songs := []game.Song{
-		game.NewSong("I Will Always Love You", "Whitney Houston"),
-		game.NewSong("Billie Jean", "Michael Jackson"),
-		game.NewSong("Shape of You", "Ed Sheeran"),
+		game.NewSong("I Will Always Love You", "Whitney Houston", "someURL"),
+		game.NewSong("Billie Jean", "Michael Jackson", "someURL"),
+		game.NewSong("Shape of You", "Ed Sheeran", "someURL"),
 	}
 
 	g := game.NewGame("Classic Pop", "classic-pop", songs, sses)

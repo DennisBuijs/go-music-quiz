@@ -1,5 +1,4 @@
 {{ define "content" }}
-
 <div id="room" hx-ext="sse" sse-connect="/sse?stream={{ .Slug }}">
     <header>
         <nav><a href="/">Back</a></nav>
@@ -7,6 +6,7 @@
         <section style="display: flex; justify-content: space-between">
             <div class="state" sse-swap="gameState">{{ .State.State }}</div>
             <div id="scoreboard">0 points</div>
+            <div id="audio" sse-swap="audio"></div>
         </section>
     </header>
 

@@ -11,14 +11,16 @@ import (
 var Games = make(map[string]*Game)
 
 type Song struct {
-	Title  string
-	Artist string
+	Title    string
+	Artist   string
+	AudioURL string
 }
 
-func NewSong(title, artist string) Song {
+func NewSong(title, artist, audioURL string) Song {
 	return Song{
-		Title:  title,
-		Artist: artist,
+		Title:    title,
+		Artist:   artist,
+		AudioURL: audioURL,
 	}
 }
 
@@ -51,6 +53,9 @@ func (g *Game) StartGame(amountOfSongs int) {
 		go func() {
 			time.Sleep(time.Until(state.EndAt))
 			g.Emit("gameState", state.State)
+			if state.State == stateSongPlaying.State {
+				g.Emit("audio", "<audio autoplay src=\""+state.Song.AudioURL+"\">")
+			}
 		}()
 	}
 }
@@ -66,7 +71,7 @@ func (g *Game) Guess(guess string) {
 
 	guess = strings.ToLower(guess)
 
-	if guess == strings.ToLower(g.CurrentSong.Title) || guess == strings.ToLower(g.CurrentSong.Artist) {
+	if guess == strings.ToLower(g.CurrentState().Song.Title) || guess == strings.ToLower(g.CurrentState().Song.Artist) {
 		g.Score++
 	}
 }
