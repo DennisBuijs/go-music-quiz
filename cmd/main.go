@@ -37,7 +37,7 @@ func startClassicRockRoom(sses *sse.Server) {
 	}
 
 	g := game.NewGame("Classic Rock", "classic-rock", songs, sses)
-	g.StartGame()
+	g.StartGame(3)
 
 	game.Games[g.Slug] = g
 
@@ -52,7 +52,7 @@ func startClassicPopRoom(sses *sse.Server) {
 	}
 
 	g := game.NewGame("Classic Pop", "classic-pop", songs, sses)
-	g.StartGame()
+	g.StartGame(3)
 
 	game.Games[g.Slug] = g
 

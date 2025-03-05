@@ -41,8 +41,8 @@ func NewGame(name string, slug string, songs []Song, sses *sse.Server) *Game {
 	}
 }
 
-func (g *Game) StartGame() {
-	g.GenerateGameSchedule(0)
+func (g *Game) StartGame(amountOfSongs int) {
+	g.GenerateGameSchedule(amountOfSongs)
 	g.Log()
 
 	for _, state := range g.Schedule.States {

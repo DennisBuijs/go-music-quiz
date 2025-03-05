@@ -39,8 +39,13 @@ var stateGameEnded = GameState{
 }
 
 func (g *Game) GenerateGameSchedule(amountOfSongs int) {
+	songsPlayedAmount := amountOfSongs
+	songBreaksAmount := amountOfSongs - 1
+	totalSongStatesAmount := songsPlayedAmount + songBreaksAmount
+
 	schedule := GameSchedule{
-		States: make([]GameState, 2+(amountOfSongs*2)),
+		// Starting + Ending + all song states
+		States: make([]GameState, 2+totalSongStatesAmount),
 	}
 
 	schedule.States[0] = GameState{
@@ -49,24 +54,28 @@ func (g *Game) GenerateGameSchedule(amountOfSongs int) {
 		EndAt:    time.Now().Add(stateGameStarting.Duration),
 	}
 
-	for i := 1; i < (amountOfSongs * 2); i += 2 {
+	for i := 1; i < totalSongStatesAmount+1; i += 2 {
 		schedule.States[i] = GameState{
 			State:    stateSongPlaying.State,
 			Duration: stateSongPlaying.Duration,
 			EndAt:    schedule.States[i-1].EndAt.Add(stateSongPlaying.Duration),
 			Song:     g.RandomSong(),
 		}
-		schedule.States[i+1] = GameState{
-			State:    stateSongBreak.State,
-			Duration: stateSongBreak.Duration,
-			EndAt:    schedule.States[i].EndAt.Add(stateSongBreak.Duration),
+
+		// No break after the last song
+		if i < totalSongStatesAmount {
+			schedule.States[i+1] = GameState{
+				State:    stateSongBreak.State,
+				Duration: stateSongBreak.Duration,
+				EndAt:    schedule.States[i].EndAt.Add(stateSongBreak.Duration),
+			}
 		}
 	}
 
-	schedule.States[1+(amountOfSongs*2)] = GameState{
+	schedule.States[1+totalSongStatesAmount] = GameState{
 		State:    stateGameEnding.State,
 		Duration: stateGameEnding.Duration,
-		EndAt:    schedule.States[amountOfSongs*2].EndAt.Add(stateGameEnding.Duration),
+		EndAt:    schedule.States[totalSongStatesAmount].EndAt.Add(stateGameEnding.Duration),
 	}
 
 	g.Schedule = schedule
